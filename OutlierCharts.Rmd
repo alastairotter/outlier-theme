@@ -112,9 +112,10 @@ barChart
 
 
 
-#### Save barchart as an SVG file for Figma
+#### Save barchart as an SVG file for Figma, or as a PNG
 ```{r barchartsvg}
-ggsave(file="test.svg", plot=barChart, width=10, height=5) # set file name
+ggsave(file="examples/barchart.svg", plot=barChart, width=10, height=5) # set file name
+ggsave(file="examples/barchart.png", plot=barChart, width=10, height=5) # set file name
 ```
 
 
@@ -200,7 +201,8 @@ lineChart
 ```
 #### Save line chart as SVG for Figma
 ```{r linesvg}
-ggsave(file="line.svg", plot=lineChart, width=10, height=5)
+ggsave(file="examples/line.svg", plot=lineChart, width=10, height=5)
+ggsave(file="examples/line.png", plot=lineChart, width=10, height=5)
 ```
 
 
