@@ -1,0 +1,201 @@
+---
+title: "Making Outlier Charts"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Install packages
+
+First install the necessary packages using install.packages("packagename"). [See names in libraries below]
+
+
+```{r libraries, echo = TRUE, results= FALSE, message = FALSE}
+library(readr)
+library(tidyr)
+library(extrafont)
+library(tidyverse)
+library(ggthemes)
+library(svglite)
+```
+
+### Import fonts
+```{r fonts, echo = TRUE, results = FALSE, message = FALSE}
+font_import()
+```
+
+You can view available fonts and their names by running: 
+```{r fonts2, echo = TRUE, results = FALSE, message = FALSE }
+fonts()
+```
+
+### Import the Outlier theme
+You can import the Outlier styles in one of three ways: (1) Copy the code directly into the script (2) Import the styles from a file on your harddrive (3) Import the styles from GitHub (recommended).
+
+#### 1 - Copy Outlier theme code into your script
+```{r outlier1, }
+theme_outlier <- function () { 
+  font <- "Roboto Condensed"
+  theme_fivethirtyeight(base_size = 12, base_family = font) %+replace%
+    theme(
+      plot.title = element_text(hjust = 0, vjust = 1.5, lineheight=.8, face="bold", size = 20, family=font, margin = margin(5,0,0,0)),
+      plot.subtitle = element_text(hjust = 0, lineheight=.8, size = 15, family=font, margin = margin(0,0,20,0)),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_line( size=.5, color="gray", linetype = "dotted"), 
+      axis.line = element_blank(),
+      axis.ticks.x = element_line( size = .5, color = "gray", linetype="solid"),
+      axis.text = element_text(size = 12),
+      axis.text.x = element_text(vjust = 0),
+      axis.ticks.length=unit(0.2, "cm"), 
+      legend.text.align = 0,
+      legend.title = element_blank(),
+      legend.key = element_blank(),
+      legend.text = element_text(family=font, size=10, color="#222222"),
+      legend.position = c(0.25, .99),
+      legend.direction = "horizontal",
+      legend.background = element_rect(fill = "#f0f0f0", color = "lightgray", size = .2, linetype = "solid"),
+      legend.key.width = unit(0.5,"cm"),
+    )
+}
+```
+
+#### 2 - Import Outlier styles from a file on your harddrive
+```{r outlier2}
+source("outlier_theme.R")
+```
+
+#### 3 - Import Outlier styles from GitHub (recommended)
+```{r outlier3}
+source("https://raw.githubusercontent.com/alastairotter/outlier-theme/main/outlier_theme.R")
+```
+
+### Making a bar chart
+#### Import data from file
+```{r data, echo = TRUE, results= FALSE, message = FALSE} 
+vax <- read_csv("~/Documents/R-Projects/vaccinations/data-in/sa-vaccinations.csv")
+```
+#### View data
+```{r dataview}
+head(vax)
+```
+
+```{r dataview2}
+summary(vax)
+```
+
+#### Set up bar chart
+```{r setupbar}
+barChart <- ggplot(vax, aes(date, vaccinated_daily)) + # start ggplot and set x and y
+  geom_bar(stat = "identity", color="#f0f0f0", fill = "#70ADAD") + # set bar colors
+  geom_hline(yintercept = 0, size = .5, color="gray") + # add horizontal line at 0 pioint for baseline
+  labs(title="Vaccinations in South Africa",
+       subtitle = "Daily vaccinations administered") + # set title and subtitle
+  scale_y_continuous(labels = scales::comma) + # use commas as thousand separators
+  coord_cartesian( ylim=c(-5,40000), expand = FALSE ) + # sets x-axis labels just below baseline
+  theme_outlier() # sets outlier theme as the default style
+```
+
+#### Draw barchart plot
+```{r plotbar}
+barChart
+```
+
+
+
+
+
+#### Save barchart as an SVG file for Figma
+```{r barchartsvg}
+ggsave(file="test.svg", plot=barChart, width=10, height=5) # set file name
+```
+
+
+### Making a multi-line chart
+#### Import data from file
+```{r linedata, echo = TRUE, results= FALSE, message = FALSE}
+vaxrec <- read_csv("~/Documents/R-Projects/vaccinations/data-in/cases-versus-recoveries.csv")
+```
+#### View data
+```{r viewdata1}
+head(vaxrec)
+```
+```{r viewdata2}
+summary(vaxrec)
+```
+#### Use tidyverse to combine data fields
+This is the preferred method although the same could be achieved with making two geom_line calls. 
+```{r combinedata}
+vaxrecnew <- vaxrec %>%
+  select(date, cumulative_cases, cumulative_recoveries) %>%
+  gather(key = "variable", value = "value", -date)
+```
+#### Set up line chart
+```{r linesetup}
+lineChart <- ggplot(vaxrecnew, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable)) + 
+  scale_color_manual(labels = c("Total Cases", "Total Recoveries"), values = c("indianred", "#70ADAD")) + 
+  scale_linetype_manual(values = c("solid", "dashed")) + 
+  geom_hline(yintercept = 0, size = .5, color="gray") + 
+  labs(title="Vaccinations in South Africa",
+       subtitle = "Total vaccinations administered") + 
+  scale_y_continuous(labels = scales::comma) + 
+  coord_cartesian( ylim=c(-5,max(vaxrecnew$value)* 1.1), expand = FALSE ) + 
+  theme_outlier() +
+  theme(legend.position = c(0.22, .99))
+```
+#### Set up line chart (annotated)
+```{r linesetupann}
+#start ggplot and set x and y. Each line needs a "+" at the end if there is more code
+lineChart <- ggplot(vaxrecnew, aes(x = date, y = value)) + 
+
+# use the variable name as the color
+geom_line(aes(color = variable)) + 
+
+# set the labels and color for each line in the legend
+scale_color_manual(labels = c("Total Cases", "Total Recoveries"), values = c("indianred", "#70ADAD")) +
+
+# set the line type for each line
+scale_linetype_manual(values = c("solid", "dashed")) + 
+
+# add horizontal rule for baseline
+geom_hline(yintercept = 0, size = .5, color="gray") + 
+
+# sets title and sub-title
+labs(title="Vaccinations in South Africa",
+    subtitle = "Total vaccinations administered") + 
+
+# use commas as thousand separators
+scale_y_continuous(labels = scales::comma) + 
+
+# sets x axis correctly
+coord_cartesian( ylim=c(-5,max(vaxrecnew$value)* 1.1), expand = FALSE ) + 
+
+# sets Outlier theme as the default style
+theme_outlier() + 
+  
+# adjust position of legend
+theme(legend.position = c(0.22, .99))
+```
+
+#### Options for charts
+You can override styles in the Outlier theme with some of these below.
+```{r options}
+#theme(legend.position = c(0.22, .99))  # changes position of legend c(x,y)  
+#theme(legend.background = element_blank())   removes legend background
+#theme(legend.position = "none") removes legend
+#theme(legend.position = "bottom")  puts legend below chart (other options: left, right, top)
+```
+
+#### Draw line chart
+```{r drawlinechart}
+lineChart
+```
+#### Save line chart as SVG for Figma
+```{r linesvg}
+ggsave(file="line.svg", plot=lineChart, width=10, height=5)
+```
+
+
