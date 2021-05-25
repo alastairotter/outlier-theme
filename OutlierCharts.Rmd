@@ -14,7 +14,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Install packages
 
-First install the necessary packages using install.packages("packagename"). [See names in libraries below]
+First install the necessary packages using install.packages("packagename"). [See names in libraries below or copy below]
+install.packages("readr")
+install.packages("tidyr")
+install.packages("tidyverse")
+install.packages("ggthemes")
+install.packages("svglite")
+install.packages('extrafont')
 
 
 ```{r libraries, echo = TRUE, results= FALSE, message = FALSE}
