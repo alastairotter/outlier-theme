@@ -2,11 +2,17 @@ theme_outlier <- function () {
   font <- "Roboto Condensed"
   theme_fivethirtyeight(base_size = 12, base_family = font) %+replace%
     theme(
+      # base colors
+      plot.background = element_rect(fill = "white", color = "white"),
+      panel.background = element_rect(fill = "white", color = "white"),
+      # base font styles
       plot.title = element_text(hjust = 0, vjust = 1.5, lineheight=.8, face="bold", size = 20, family=font, margin = margin(5,0,0,0)),
       plot.subtitle = element_text(hjust = 0, lineheight=.8, size = 15, family=font, margin = margin(0,0,20,0)),
+      # grid styles
       panel.grid.major.x = element_blank(),
       panel.grid.minor.x = element_blank(),
       panel.grid.major.y = element_line( size=.5, color="gray", linetype = "dotted"), 
+      # axes
       axis.line = element_blank(),
       axis.ticks.x = element_line( size = .5, color = "gray", linetype="solid"),
       axis.text = element_text(size = 12),
@@ -16,6 +22,7 @@ theme_outlier <- function () {
       #plot.background = element_rect(fill="indianred", colour=NA), 
       #plot.margin=unit(c(5.5, 5.5, 5.5, 5.5),"mm"),
       #legend.position = "top",
+      #legend styles
       legend.text.align = 0,
       #legend.background = element_blank(),
       legend.title = element_blank(),
