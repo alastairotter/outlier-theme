@@ -84,9 +84,13 @@ source("https://raw.githubusercontent.com/alastairotter/outlier-theme/main/outli
 ```
 
 ### Making a bar chart
-#### Import data from file
+#### Import data from either a local file
 ```{r data, echo = TRUE, results= FALSE, message = FALSE} 
 vax <- read_csv("~/Documents/R-Projects/vaccinations/data-in/sa-vaccinations.csv")
+```
+#### Or import from web URL
+```{r, echo = TRUE, results = FALSE, message - FALSE}
+vax <- read_csv("http://api.mediahack.co.za/adh/sa-vaccinations.csv")
 ```
 #### View data
 ```{r dataview}
