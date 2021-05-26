@@ -27,7 +27,7 @@ theme_outlier <- function () {
       #legend.background = element_blank(),
       legend.title = element_blank(),
       legend.key = element_blank(),
-      legend.text = element_text(family=font, size=10, color="#222222"),
+      legend.text = element_text(family=font, size=12, color="#222222"),
       legend.position = c(0.25, .99),
       legend.direction = "horizontal",
       legend.background = element_rect(fill = "#f0f0f0", color = "lightgray", size = .2, linetype = "solid"),
