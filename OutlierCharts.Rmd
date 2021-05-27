@@ -119,15 +119,11 @@ barChart
 ```
 
 
-
-
-
 #### Save barchart as an SVG file for Figma, or as a PNG
 ```{r barchartsvg}
 ggsave(file="examples/barchart.svg", plot=barChart, width=10, height=5) # set file name
 ggsave(file="examples/barchart.png", plot=barChart, width=10, height=5) # set file name
 ```
-
 
 ### Making a multi-line chart
 #### Import data from file
@@ -215,4 +211,69 @@ ggsave(file="examples/line.svg", plot=lineChart, width=10, height=5)
 ggsave(file="examples/line.png", plot=lineChart, width=10, height=5)
 ```
 
+### Making a stacked bar chart
+#### Import data from local csv file
+```{r stackeddata, echo = TRUE, results= FALSE, message = FALSE}
+vaxreg <- read_csv("data/registrations.csv")
+```
 
+#### View data
+```{r viewreg}
+head(vaxreg)
+```
+```{r viewreg2}
+summary(vaxreg)
+```
+
+#### Format the data
+This uses Dplyr to "gather " the data into the columns we need. Before we format the it the data looks like this: 
+```{r }
+
+head(vaxreg)
+```
+Then we format it by selecting a key and value pair and any other columns we want to include in the new data. First, "select" the columns needed, and then "gather" them: 
+```{r}
+vaxreg <- vaxreg %>%
+  select(Province, Healthcare, SixtyPlus, Total) %>%
+  gather(key = "variable", value = "value", -Province, -Total)
+  
+```
+The resulting data looks like: 
+```{r}
+vaxreg
+```
+#### Sort table by Total column
+``` {r}
+vaxreg <- arrange(vaxreg, desc(-Total))
+vaxreg$Province <- factor(vaxreg$Province, levels = unique(vaxreg$Province))
+```
+
+#### Create stacked bar chart
+``` {r} 
+stackedBarChart <- ggplot(vaxreg, aes(x = Province, y = value, fill = variable)) +
+  geom_bar(stat = "identity", position = "stack") + 
+  geom_hline(yintercept = 0, size = .5, color="gray") + 
+  labs(title="Vaccination Resistrations in South Africa",
+       subtitle = "Total Registrations") + 
+  scale_y_continuous(labels = scales::comma) +
+  coord_cartesian( ylim=c(-5,1000000), expand = FALSE ) + 
+  theme_outlier() 
+ 
+```
+
+#### Output stacked bar chart
+``` {r} 
+stackedBarChart
+```
+
+#### Change the orientation of the bars
+You can make a horizontal bar chart using the coord_flip() function and moving the legend using the legend.position function. 
+``` {r, echo = TRUE, results = FALSE, message = FALSE} 
+stackedBarChart <- stackedBarChart + 
+  coord_flip() +
+  theme(legend.position = c(0.8, 0.1))
+```
+The result: 
+```{r}
+stackedBarChart  
+```
