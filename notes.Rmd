@@ -1,0 +1,40 @@
+---
+title: "R Notes"
+output: html_document
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'notes.html'))})
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+``` {r background}
+library(readr)
+```
+
+## R Notes
+Some notes on useful functions in R. 
+
+### Format a date as a proper date
+```{r, echo = FALSE, results= FALSE, message = FALSE}
+df <- read_csv("http://mediahack.co.za/datastories/coronavirus/data/provinces-csv.php")
+```
+
+```{r}
+df$date <- as.Date(df$date)
+```
+
+### Filter data for a specific date range
+This requires the "lubridate" package.
+```{r, eval = FALSE }
+dfweek <- df %>%
+  select(date) %>%
+  filter(date >= as.Date(today(), format="%Y-%m-%d")-7)
+```
+
+
+
+
